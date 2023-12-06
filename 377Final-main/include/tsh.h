@@ -34,7 +34,7 @@ class simple_shell {
   bool isPrintf(char* cmd);
   bool isEcho(char* cmd);
   bool isRead(char* cmd);
-  void binary_get(const std::string& input, std::string& output);
+  void expand_escape_sequences(const std::string& input, std::string& output);
   void get_current_timestamp(std::string& output);
   // storing the last line that was entered into the "read" command in a pair with it's variable
   // "$REPLY" if no variable provided
