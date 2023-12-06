@@ -91,11 +91,11 @@ void simple_shell::exec_command(CmdTokens* tokens, int tokenCount) {
         dup2(pipes[i][1], STDOUT_FILENO);
         close(pipes[i][1]);
       }
-
+      
       // Try replace some parts of args with existing aliases.
       int length = sizeof(args)/sizeof(args[0]);
       for (int j = 0; j < length; j++) {
-     	string currentElement = args[0];
+	string currentElement = args[0];
         for (list<Pair>::iterator it = pairs.begin(); it != pairs.end(); it++) {
           string currentName = (it)->name;
           if (currentElement.compare(currentName) == 0) {
@@ -104,7 +104,7 @@ void simple_shell::exec_command(CmdTokens* tokens, int tokenCount) {
           }
         }
       }
-
+      
       execvp(args[0], args);
       perror("execvp error in child 1");
       exit(1);
@@ -153,7 +153,7 @@ void simple_shell::printf_command(char** cmdTokens, ...) {
         // Handle %b - expand backslash escape sequences
         // Note: This assumes that cmdTokens[i + 1] is a string
         std::string expanded;
-        binary_get(cmdTokens[i + 1], expanded);
+        expand_escape_sequences(cmdTokens[i + 1], expanded);
         formatString.replace(pos, 16, expanded);
       } else if (formatString[pos + 1] == 't') {
         //cout << ctime(&timenow) <<  endl;
@@ -192,7 +192,6 @@ void simple_shell::help_command() {
   cout << "Welcome to the simple shell!" << endl;
   cout << "  printf to print" << endl;
   cout << "  help - Display this help message" << endl;
-  cout << " alias - Make shortcut for a single command" << endl;
   cout << "  echo - Output provided arguments" << endl;
   cout << "  read - Read and store one line from standard input" << endl;
   cout << "  quit - Exit the shell" << endl;
@@ -244,8 +243,8 @@ void simple_shell::alias_command(char** cmdTokens) {
       //cout << "currentName: " << currentName << endl;
       //cout << "nameStr: " << nameStr <<	endl;
       if (nameStr.compare(currentName) == 0) {
-	      pairs.erase(it);
-	      break;
+	pairs.erase(it);
+	break;
       }
     }
     
@@ -355,7 +354,7 @@ bool simple_shell::isEcho(char* cmd) {
   return(cmdStr.compare(echoCommand) == 0);
 }
 
-void simple_shell::binary_get(const std::string& input, std::string& output) {
+void simple_shell::expand_escape_sequences(const std::string& input, std::string& output) {
   output.clear();  // Clear the output string before appending characters
   std::ostringstream oss;
   for (size_t i = 0; i < input.size(); ++i) {
